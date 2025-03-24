@@ -16,7 +16,7 @@ const Header = ({ isAdminPage = false }) => {
             alt="HyperGG Rides logo"
             width={200}
             height={60}
-            className="h-30 w-auto object-contain rotate-6"
+            className="h-30 w-auto object-contain rotate-6 pointer-events-none"
           />
           {isAdminPage && (
             <span className="text-xs font-extralight">admin</span>
