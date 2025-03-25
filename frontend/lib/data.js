@@ -53,10 +53,10 @@ export const carMakes = [
 ];
 
 export const bodyTypes = [
-  { id: 1, name: "Crossover", image: "/body/crossover.webp" },
-  { id: 2, name: "Pickup", image: "/body/pickup.webp" },
-  { id: 3, name: "Sports Car", image: "/body/sportscar.webp" },
-  { id: 4, name: "Luxury", image: "/body/luxury.webp" },
+  { id: 1, name: "Crossover", image: "/cars_bodyType/a.png" },
+  { id: 2, name: "Pickup", image: "/cars_bodyType/b.png" },
+  { id: 3, name: "Sports Car", image: "/cars_bodyType/c.png" },
+  { id: 4, name: "Luxury", image: "/cars_bodyType/d.png" },
 ];
 
 export const faqItems = [
