@@ -5,7 +5,7 @@ export const featuredCars = [
     model: "Mustang",
     year: 2022,
     price: 35999,
-    images: ["/1.jpg"],
+    images: ["/1.png"],
     transmission: "Manual",
     fuelType: "Gasoline",
     bodyType: "Coupe",
@@ -19,7 +19,7 @@ export const featuredCars = [
     model: "Leaf",
     year: 2024,
     price: 32500,
-    images: ["/2.jpg"],
+    images: ["/2.png"],
     transmission: "Automatic",
     fuelType: "Electric",
     bodyType: "Hatchback",
@@ -33,7 +33,7 @@ export const featuredCars = [
     model: "Cayenne",
     year: 2023,
     price: 68999,
-    images: ["/3.jpg"],
+    images: ["/3.png"],
     transmission: "Automatic",
     fuelType: "Hybrid",
     bodyType: "SUV",
@@ -44,12 +44,12 @@ export const featuredCars = [
 ];
 
 export const carMakes = [
-  { id: 1, name: "Mercedes", image: "/make/mercedes.webp" },
-  { id: 2, name: "Audi", image: "/make/audi.webp" },
-  { id: 3, name: "Toyota", image: "/make/toyota.webp" },
-  { id: 4, name: "Kia", image: "/make/kia.webp" },
-  { id: 5, name: "Volkswagen", image: "/make/volkswagen.webp" },
-  { id: 6, name: "Chevrolet", image: "/make/chevrolet.webp" },
+  { id: 1, name: "BMW", image: "/cars_logo/11.jpeg" },
+  { id: 2, name: "Toyota", image: "/cars_logo/222.png" },
+  { id: 3, name: "Huyndai", image: "/cars_logo/33.jpeg" },
+  { id: 4, name: "Ford", image: "/cars_logo/44.png" },
+  { id: 5, name: "Mahindra", image: "/cars_logo/55.png" },
+  { id: 6, name: "Tata", image: "/cars_logo/66.jpeg" },
 ];
 
 export const bodyTypes = [
