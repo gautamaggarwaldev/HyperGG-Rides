@@ -29,8 +29,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
-// import { addCar, processCarImageWithAI } from "@/actions/cars";
-// import useFetch from "@/hooks/use-fetch";
 import Image from "next/image";
 import { addCar, processCarImageWithAI } from "@/actions/car";
 import useFetch from "@/hooks/useFetch";
