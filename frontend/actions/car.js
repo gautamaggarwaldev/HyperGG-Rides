@@ -1,3 +1,5 @@
+"use server";
+import { v4 as uuidv4 } from "uuid";
 import { db } from "@/lib/prisma";
 import { createClient } from "@/lib/supabase";
 import { auth } from "@clerk/nextjs/server";
@@ -39,8 +41,8 @@ export async function processCarImageWithAI(file) {
       6. Mileage
       7. Fuel type (your best guess)
       8. Transmission type (your best guess)
-      9. Price (your best guess)
-      9. Short Description as to be added to a car listing
+      9. Price in INR(your best guess)
+      9. 150 words Description as to be added to a car listing
 
       Format your response as a clean JSON object with these fields:
       {
@@ -99,6 +101,7 @@ export async function processCarImageWithAI(file) {
       };
     } catch (error) {
       console.error("Failed to parse AI response:", parseError);
+      console.log("Raw response:", text);
       return {
         success: false,
         error: "Failed to parse AI response",
@@ -110,6 +113,7 @@ export async function processCarImageWithAI(file) {
   }
 }
 
+// Add a car to the database with images
 export async function addCar({ carData, images }) {
   try {
     const { userId } = await auth();
@@ -138,12 +142,12 @@ export async function addCar({ carData, images }) {
       const imageBuffer = Buffer.from(base64, "base64");
 
       const mimeMatch = base64Data.match(/data:image\/([a-zA-Z0-9]+);/);
-      const fileExtension = mimeMatch ? mimeMatch[1] : "jpg";
+      const fileExtension = mimeMatch ? mimeMatch[1] : "jpeg";
 
       const fileName = `image-${Date.now()}-${i}.${fileExtension}`;
       const filePath = `${folderPath}/${fileName}`;
 
-      await supabase.storage.from("car-images").upload(filePath, imageBuffer, {
+      const { data, error } =  await supabase.storage.from("car-images").upload(filePath, imageBuffer, {
         contentType: `image/${fileExtension}`,
       });
 
