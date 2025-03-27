@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,9 +25,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import { Loader, Upload, X } from "lucide-react";
+import { Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import useFetch from "@/hooks/useFetch";
+import { addCar } from "@/actions/car";
+import { useRouter } from "next/navigation";
 
 const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid", "Plug-in Hybrid"];
 const transmissions = ["Automatic", "Manual", "Semi-Automatic"];
@@ -42,32 +45,30 @@ const bodyTypes = [
 ];
 const carStatuses = ["AVAILABLE", "UNAVAILABLE", "SOLD"];
 
+const carFormSchema = z.object({
+  make: z.string().min(1, "Make is required"),
+  model: z.string().min(1, "Model is required"),
+  year: z.string().refine((val) => {
+    const year = parseInt(val);
+    return !isNaN(year) && year >= 1900 && year <= new Date().getFullYear() + 1;
+  }, "Valid year required"),
+  price: z.string().min(1, "Price is required"),
+  mileage: z.string().min(1, "Mileage is required"),
+  color: z.string().min(1, "Color is required"),
+  fuelType: z.string().min(1, "Fuel Type is required"),
+  bodyType: z.string().min(1, "Body Type is required"),
+  transmission: z.string().min(1, "Transmission is required"),
+  seats: z.string().optional(),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  status: z.enum(["AVAILABLE", "UNAVAILABLE", "SOLD"]),
+  featured: z.boolean().default(false),
+});
+
 const AddCarForm = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("ai");
   const [uploadedImages, setUploadedImages] = useState([]);
   const [imageError, setImageError] = useState("");
-
-  const carFormSchema = z.object({
-    make: z.string().min(1, "Make is required"),
-    model: z.string().min(1, "Model is required"),
-    year: z.string().refine((val) => {
-      const year = parseInt(val);
-      return (
-        !isNaN(year) && year >= 1900 && year <= new Date().getFullYear() + 1
-      );
-    }, "Valid year required"),
-    price: z.string().min(1, "Price is required"),
-    mileage: z.string().min(1, "Mileage is required"),
-    color: z.string().min(1, "Color is required"),
-    fuelType: z.string().min(1, "Fuel Type is required"),
-    bodyTypes: z.string().min(1, "Body Type is required"),
-    seats: z.string().optional(),
-    description: z
-      .string()
-      .min(10, "Description must be at least 10 characters"),
-    status: z.enum(["AVAILABLE", "UNAVAILABLE", "SOLD"]),
-    featured: z.boolean().default(false),
-  });
 
   const {
     register,
@@ -95,16 +96,20 @@ const AddCarForm = () => {
     },
   });
 
-  const onSubmit = async (data) => {
-    //write code...
-    if (uploadedImages.length === 0) {
-      setImageError("Please upload at least one image");
-      return;
+  const {
+    data: addCarResult,
+    loading: addCarLoading,
+    fn: addCarFn,
+  } = useFetch(addCar);
+
+  useEffect(() => {
+    if (addCarResult?.success) {
+      toast.success("Car added successfully");
+      router.push("/admin/cars");
     }
-  };
+  }, [addCarResult, addCarLoading]);
 
   const removeImage = (index) => {
-    // write code...
     setUploadedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -117,9 +122,8 @@ const AddCarForm = () => {
       return true;
     });
 
-    if (validFiles.length === 0) {
-      return;
-    }
+    if (validFiles.length === 0) return;
+
     const newImages = [];
     validFiles.forEach((file) => {
       const reader = new FileReader();
@@ -146,6 +150,29 @@ const AddCarForm = () => {
     },
     multiple: true,
   });
+
+  const onSubmit = async (data) => {
+    //write code...
+    if (uploadedImages.length === 0) {
+      setImageError("Please upload at least one image");
+      return;
+    }
+
+    console.log(data, uploadedImages);
+
+    const carData = {
+      ...data,
+      year: parseInt(data.year),
+      price: parseFloat(data.price),
+      mileage: parseInt(data.mileage),
+      seats: data.seats ? parseInt(data.seats) : null,
+    };
+
+    await addCarFn({
+      carData,
+      images: uploadedImages,
+    });
+  };
 
   return (
     <div>
@@ -179,7 +206,7 @@ const AddCarForm = () => {
                       className={errors.make ? "border-red-500" : ""}
                     />
                     {errors.make && (
-                      <p className="txt-xs text-red-500">
+                      <p className="text-xs text-red-500">
                         {errors.make.message}
                       </p>
                     )}
@@ -193,7 +220,7 @@ const AddCarForm = () => {
                       className={errors.model ? "border-red-500" : ""}
                     />
                     {errors.model && (
-                      <p className="txt-xs text-red-500">
+                      <p className="text-xs text-red-500">
                         {errors.model.message}
                       </p>
                     )}
@@ -207,7 +234,7 @@ const AddCarForm = () => {
                       className={errors.year ? "border-red-500" : ""}
                     />
                     {errors.year && (
-                      <p className="txt-xs text-red-500">
+                      <p className="text-xs text-red-500">
                         {errors.year.message}
                       </p>
                     )}
@@ -221,9 +248,7 @@ const AddCarForm = () => {
                       className={errors.price ? "border-red-500" : ""}
                     />
                     {errors.price && (
-                      <p className="txt-xs text-red-500">
-                        {errors.price.message}
-                      </p>
+                      <p className="text-red-500">{errors.price.message}</p>
                     )}
                   </div>
                   <div className="space-y-2">
@@ -235,13 +260,13 @@ const AddCarForm = () => {
                       className={errors.mileage ? "border-red-500" : ""}
                     />
                     {errors.mileage && (
-                      <p className="txt-xs text-red-500">
+                      <p className="text-xs text-red-500">
                         {errors.mileage.message}
                       </p>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="color">Color ₹</Label>
+                    <Label htmlFor="color">Color</Label>
                     <Input
                       id="color"
                       {...register("color")}
@@ -249,7 +274,7 @@ const AddCarForm = () => {
                       className={errors.color ? "border-red-500" : ""}
                     />
                     {errors.color && (
-                      <p className="txt-xs text-red-500">
+                      <p className="text-xs text-red-500">
                         {errors.color.message}
                       </p>
                     )}
@@ -277,7 +302,7 @@ const AddCarForm = () => {
                     </Select>
 
                     {errors.fuelType && (
-                      <p className="txt-xs text-red-500">
+                      <p className="text-xs text-red-500">
                         {errors.fuelType.message}
                       </p>
                     )}
@@ -305,7 +330,7 @@ const AddCarForm = () => {
                     </Select>
 
                     {errors.transmission && (
-                      <p className="txt-xs text-red-500">
+                      <p className="text-xs text-red-500">
                         {errors.transmission.message}
                       </p>
                     )}
@@ -333,7 +358,7 @@ const AddCarForm = () => {
                     </Select>
 
                     {errors.bodyType && (
-                      <p className="txt-xs text-red-500">
+                      <p className="text-xs text-red-500">
                         {errors.bodyType.message}
                       </p>
                     )}
@@ -405,6 +430,7 @@ const AddCarForm = () => {
                   </div>
                 </div>
 
+                {/* Image Upload with Dropzone */}
                 <div>
                   <Label
                     htmlFor="images"
@@ -413,39 +439,38 @@ const AddCarForm = () => {
                     Images{" "}
                     {imageError && <span className="text-red-500">*</span>}
                   </Label>
-                  <div>
+                  <div className="mt-2">
                     <div
                       {...getMultiImageRootProps()}
-                      className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition mt-2 ${
+                      className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition ${
                         imageError ? "border-red-500" : "border-gray-300"
                       }`}
                     >
                       <input {...getMultiImageInputProps()} />
                       <div className="flex flex-col items-center justify-center">
                         <Upload className="h-12 w-12 text-gray-400 mb-3" />
-                        <p className="text-gray-600 mb-2 text-sm">
-                          Drag & Drop or click to upload multiple images
-                        </p>
-
-                        <p className="text-gray-400 text-xs mt-1">
-                          Supports: JPG, PNG, JPEG, WEBP (max 5MB each)
-                        </p>
+                        <span className="text-sm text-gray-600">
+                          Drag & drop or click to upload multiple images
+                        </span>
+                        <span className="text-xs text-gray-500 mt-1">
+                          (JPG, PNG, WebP, max 5MB each)
+                        </span>
                       </div>
                     </div>
                     {imageError && (
                       <p className="text-xs text-red-500 mt-1">{imageError}</p>
                     )}
                   </div>
-                </div>
-                {uploadedImages.length > 0 && (
-                  <div className="mt-4">
-                    <h3 className="text-sm font-medium mb-2">
-                      Uploaded Images ({uploadedImages.length})
-                    </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                      {uploadedImages.map((image, index) => {
-                        return (
-                          <div className="relative group" key={index}>
+
+                  {/* Image Previews */}
+                  {uploadedImages.length > 0 && (
+                    <div className="mt-4">
+                      <h3 className="text-sm font-medium mb-2">
+                        Uploaded Images ({uploadedImages.length})
+                      </h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        {uploadedImages.map((image, index) => (
+                          <div key={index} className="relative group">
                             <Image
                               src={image}
                               alt={`Car image ${index + 1}`}
@@ -464,20 +489,20 @@ const AddCarForm = () => {
                               <X className="h-3 w-3" />
                             </Button>
                           </div>
-                        );
-                      })}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
 
                 <Button
                   type="submit"
                   className="w-full md:w-auto"
-                  disabled={true}
+                  disabled={addCarLoading}
                 >
-                  {true ? (
+                  {addCarLoading ? (
                     <>
-                      <Loader className="mr-2 h-4 w-4 animate-spin" /> Adding
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Adding
                       Car...
                     </>
                   ) : (
