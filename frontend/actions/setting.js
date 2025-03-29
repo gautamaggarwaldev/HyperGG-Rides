@@ -34,43 +34,43 @@ export async function getDealershipInfo() {
           workingHours: {
             create: [
               {
-                dayOfWeek: DayOfWeek.MONDAY,
+                dayOfWeek: "MONDAY",
                 openTime: "09:00",
                 closeTime: "18:00",
                 isOpen: true,
               },
               {
-                dayOfWeek: DayOfWeek.TUESDAY,
+                dayOfWeek: "TUESDAY",
                 openTime: "09:00",
                 closeTime: "18:00",
                 isOpen: true,
               },
               {
-                dayOfWeek: DayOfWeek.WEDNESDAY,
+                dayOfWeek: "WEDNESDAY",
                 openTime: "09:00",
                 closeTime: "18:00",
                 isOpen: true,
               },
               {
-                dayOfWeek: DayOfWeek.THURSDAY,
+                dayOfWeek: "THURSDAY",
                 openTime: "09:00",
                 closeTime: "18:00",
                 isOpen: true,
               },
               {
-                dayOfWeek: DayOfWeek.FRIDAY,
+                dayOfWeek: "FRIDAY",
                 openTime: "09:00",
                 closeTime: "18:00",
                 isOpen: true,
               },
               {
-                dayOfWeek: DayOfWeek.SATURDAY,
+                dayOfWeek: "SATURDAY",
                 openTime: "10:00",
                 closeTime: "16:00",
                 isOpen: true,
               },
               {
-                dayOfWeek: DayOfWeek.SUNDAY,
+                dayOfWeek: "SUNDAY",
                 openTime: "10:00",
                 closeTime: "16:00",
                 isOpen: false,
