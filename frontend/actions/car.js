@@ -42,7 +42,7 @@ export async function processCarImageWithAI(file) {
       6. Mileage
       7. Fuel type (your best guess)
       8. Transmission type (your best guess)
-      9. Price in INR(your best guess)
+      9. Price in INR and not add any currency symbol and comma in between digits(your best guess)
       9. 150 words Description as to be added to a car listing
 
       Format your response as a clean JSON object with these fields:
