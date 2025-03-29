@@ -6,6 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { serializedCarData } from "@/lib/helper";
 
 async function fileToBase64(file) {
   const bytes = await file.arrayBuffer();
@@ -147,9 +148,11 @@ export async function addCar({ carData, images }) {
       const fileName = `image-${Date.now()}-${i}.${fileExtension}`;
       const filePath = `${folderPath}/${fileName}`;
 
-      const { data, error } =  await supabase.storage.from("car-images").upload(filePath, imageBuffer, {
-        contentType: `image/${fileExtension}`,
-      });
+      const { data, error } = await supabase.storage
+        .from("car-images")
+        .upload(filePath, imageBuffer, {
+          contentType: `image/${fileExtension}`,
+        });
 
       if (error) {
         console.error("Error uploading image:", error);
@@ -194,3 +197,108 @@ export async function addCar({ carData, images }) {
     throw new Error("Error adding car:" + error.message);
   }
 }
+
+export async function getCars(search = "") {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+    const user = await db.user.findUnique({
+      where: {
+        clerkUserId: userId,
+      },
+    });
+
+    if (!user) throw new Error("User not found");
+
+    let where = {};
+    if (search) {
+      where.OR = [
+        { make: { contains: search, mode: "insensitive" } },
+        { model: { contains: search, mode: "insensitive" } },
+        { color: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    const cars = await db.car.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+    });
+
+    const serializedCars = cars.map(serializedCarData);
+
+    return {
+      success: true,
+      data: serializedCars,
+    };
+  } catch (error) {
+    console.error("Error fetching cars:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
+
+export async function deleteCar(id) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const user = await db.user.findUnique({ where: { clerkUserId: userId } });
+
+    if (!user) throw new Error("User not found");
+
+    const car = await db.car.findUnique({
+      where: { id },
+      select: { images: true },
+    });
+
+    if (!car) {
+      return {
+        success: false,
+        error: "Car not found",
+      };
+    }
+
+    await db.car.delete({ where: { id } });
+
+    try {
+      const cookieStore = await cookies();
+      const supabase = createClient(cookieStore);
+
+      const filePaths = car.images
+        .map((imageUrl) => {
+          const url = new URL(imageUrl);
+          const pathMatch = url.pathname.match(/\/car-images\/(.*)/);
+          return pathMatch ? pathMatch[1] : null;
+        })
+        .filter(Boolean);
+
+      if (filePaths.length > 0) {
+        const { error } = await supabase.storage
+          .from("car-images")
+          .remove(filePaths);
+
+        if (error) {
+          console.error("Error deleting images:", error);
+        }
+      }
+    } catch (storageError) {
+      console.error("Error with storage operation:", storageError);
+    }
+
+    revalidatePath("/admin/cars");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error("Error deleting car:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
+
+
