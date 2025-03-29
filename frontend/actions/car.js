@@ -301,4 +301,40 @@ export async function deleteCar(id) {
   }
 }
 
+export async function updateCar(id, { status, featured }) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
 
+    const user = await db.user.findUnique({ where: { clerkUserId: userId } });
+
+    if (!user) throw new Error("User not found");
+
+    const updateData = {};
+
+    if (status !== undefined) {
+      updateData.status = status;
+    }
+
+    if (featured !== undefined) {
+      updateData.featured = featured;
+    }
+
+    await db.car.update({
+      where: { id },
+      data: updateData,
+    });
+
+    revalidatePath("/admin/cars");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error("Error updating car status:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+}
