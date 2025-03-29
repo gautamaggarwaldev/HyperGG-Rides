@@ -301,7 +301,7 @@ export async function deleteCar(id) {
   }
 }
 
-export async function updateCar(id, { status, featured }) {
+export async function updateCarStatus(id, { status, featured }) {
   try {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
