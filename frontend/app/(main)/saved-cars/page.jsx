@@ -2,7 +2,7 @@ import { getSavedCar } from '@/actions/carListing';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import React from 'react'
-import SavedCarList from './_components/SavedCarList';
+import { SavedCarList } from './_components/SavedCarList';
 
 export const metadata = {
     title: "Saved Cars | HyperGG Rides",
