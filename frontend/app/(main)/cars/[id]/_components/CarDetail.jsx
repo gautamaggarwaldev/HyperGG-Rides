@@ -19,7 +19,6 @@ import {
   Calendar,
   Car,
   Currency,
-  Fuel,
   Gauge,
   Heart,
   LocateFixed,
@@ -30,7 +29,6 @@ import {
   Phone,
   Mail,
   Check,
-  X,
   ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
