@@ -246,7 +246,7 @@ const CarFilter = ({ filters }) => {
               </Button>
             )}
           </div>
-          <div className="py-6">
+          <div className="p-4">
             <CarFilterControl
               filters={filters}
               currentFilters={currentFilters}
