@@ -1,5 +1,4 @@
 "use client";
-import { formatCurrency } from "@/lib/helper";
 import React, { useState } from "react";
 
 function EmiCalculator({ price = 100000 }) {
