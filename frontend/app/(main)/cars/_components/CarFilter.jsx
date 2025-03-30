@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Filter, Sliders, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import CarFilterControl from "./CarFilterControl";
+import { CarFilterControl } from "./CarFilterControl";
 import {
   Select,
   SelectContent,
@@ -61,9 +61,9 @@ const CarFilter = ({ filters }) => {
     currentMake,
     currentBodyType,
     currentFuelType,
+    currentTransmission,
     currentMinPrice,
     currentMaxPrice,
-    currentTransmission,
     currentSortBy,
   ]);
 
@@ -81,6 +81,7 @@ const CarFilter = ({ filters }) => {
     bodyType,
     fuelType,
     transmission,
+    priceRange,
     priceRangeMin: filters.priceRange.min,
     priceRangeMax: filters.priceRange.max,
   };
@@ -128,7 +129,7 @@ const CarFilter = ({ filters }) => {
     setIsSheetOpen(false);
   };
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     const params = new URLSearchParams();
 
     if (make) params.set("make", make);
@@ -152,7 +153,18 @@ const CarFilter = ({ filters }) => {
 
     router.push(url);
     setIsSheetOpen(false);
-  };
+  }, [
+    make,
+    bodyType,
+    fuelType,
+    transmission,
+    priceRange,
+    sortBy,
+    pathname,
+    searchParams,
+    filters.priceRange.min,
+    filters.priceRange.max,
+  ]);
 
   return (
     <div className="flex lg:flex-col justify-between gap-4">
