@@ -333,7 +333,7 @@ export async function getCarById(carId) {
       userTestDrive = {
         id: existingTestDrive.id,
         status: existingTestDrive.status,
-        bookingDate: existingTestDrive.bookingDate.ISOString(),
+        bookingDate: existingTestDrive.bookingDate.toISOString(),
       };
     }
 
