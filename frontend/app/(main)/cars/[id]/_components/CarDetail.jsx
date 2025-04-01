@@ -36,6 +36,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import EmiCalculator from "./EmiCalculator";
+import { format } from "date-fns";
 
 const CarDetail = ({ car, testDriveInfo }) => {
   const router = useRouter();
@@ -375,7 +376,10 @@ const CarDetail = ({ car, testDriveInfo }) => {
                   >
                     <Calendar className="mr-2 h-5 w-5" />
                     {testDriveInfo.userTestDrive
-                      ? `Test Drive Booked`
+                      ? `Booked for ${format(
+                          new Date(testDriveInfo.userTestDrive.bookingDate),
+                          "EEEE, MMMM d, yyyy"
+                        )}`
                       : "Schedule Test Drive"}
                   </Button>
                 )}
