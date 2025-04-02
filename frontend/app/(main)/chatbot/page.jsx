@@ -58,12 +58,11 @@ export default function CarChatbot() {
 
   // Better special character handling - preserves HTML tags while removing other problematic characters
   const cleanResponseText = (text) => {
-    // This regex preserves HTML tags like <b> while removing other unwanted characters
-    // The approach keeps HTML formatting intact while removing potentially problematic characters
+    // This regex preserves HTML tags like ** while removing other unwanted characters
     return text.replace(/<\/?[^>]+(>|$)/g, match => {
       // Temporarily encode HTML tags
       return `###HTML_TAG###${encodeURIComponent(match)}###`;
-    }).replace(/[^\w\s.,!?\(\)\-@#$%&*:;'"\/]/g, '') // Remove special chars except allowed ones
+    }).replace(/[^\u0020-\u007F]/,"") // <- Problem is here
       .replace(/###HTML_TAG###([^#]+)###/g, (_, encoded) => {
         // Decode HTML tags back
         return decodeURIComponent(encoded);
