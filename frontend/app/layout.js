@@ -22,7 +22,9 @@ export default function RootLayout({ children }) {
           <Toaster richColors />
           <footer>
             <div>
+  
               <Footer />
+  
             </div>
           </footer>
         </body>
