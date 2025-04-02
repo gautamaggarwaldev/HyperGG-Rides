@@ -1,6 +1,7 @@
 import { getFeatureddCars } from "@/actions/home";
 import CarCard from "@/components/CarCard";
 import HomeSearch from "@/components/homeSearch";
+import ChatButton from "@/components/ChatButton"; // We'll create this component
 import {
   Accordion,
   AccordionContent,
@@ -15,7 +16,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default async function Home() {
-
   const featuredCars = await getFeatureddCars();
   
   return (
@@ -214,6 +214,9 @@ export default async function Home() {
           </div>
         </section>
       </section>
+
+      {/* Chat bot button component */}
+      <ChatButton />
     </div>
   );
 }
