@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Create the model with your car expert system instruction
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
+  model: "gemini-2.5-flash",
   systemInstruction: `
     You are an expert automotive assistant designed to provide detailed, accurate information about cars. Your role is to help users with any car-related questions by providing comprehensive, factual information based on the following attribute categories:
 
